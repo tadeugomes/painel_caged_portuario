@@ -1,0 +1,10 @@
+name: painel_caged_portuario
+title:
+username: observatorioportuario
+account: observatorioportuario
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12857125
+bundleId: 9156639
+url: https://observatorioportuario.shinyapps.io/painel_caged_portuario/
+version: 1

@@ -1,0 +1,9 @@
+library(rsconnect)
+
+rsconnect::setAccountInfo(name='observatorioportuario',
+                          token='7B900E148A6A9C2EA3F5D096568666FD',
+                          secret='8BW/lYWqgmb2XV91pP8fxq7MW8ZNRBUI7LKq2Dbk')
+
+
+rsconnect::deployApp('C:/Users/tadeu/OneDrive/Documentos/GitHub/painel_caged_portuario')
+
