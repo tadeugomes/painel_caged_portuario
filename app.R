@@ -123,11 +123,15 @@ Para uma melhor experiência, abra o painel no seu computador.",
     )
   ),
   dashboardBody(
+    # Adicionando o título da aba do navegador
+    tags$head(
+      tags$title("Mercado de Trabalho Portuário")
+    ),
     tabItems(
       # Primeira Aba: Gráfico de Linhas, Gráfico de Barras, Mapa, Título e ValueBoxes
       tabItem(tabName = "evolucao",
               fluidRow(
-                tags$h3("Movimentações do emprego formal em junho", style = "text-align: center; margin-bottom: 20px;")
+                tags$h3("Movimentações do emprego formal em novembro de 2024", style = "text-align: center; margin-bottom: 20px;")
               ),
               fluidRow(
                 valueBoxOutput("saldoPaisBox"),
@@ -146,7 +150,7 @@ Para uma melhor experiência, abra o painel no seu computador.",
                                        choices = format(seq.Date(from = min(df_resumo$data_mes), 
                                                                  to = max(df_resumo$data_mes), 
                                                                  by = "month"), "%Y-%m"),
-                                       selected = "2024-06"))
+                                       selected = "2024-11"))
                 ),
                 column(5, 
                        box(title = "Saldo por Unidade Federativa", width = NULL, highchartOutput("barchart"), 
