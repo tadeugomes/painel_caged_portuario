@@ -1,30 +1,72 @@
 
-library(basedosdados)
-library(tidyverse)
 
+# Configurar codificação UTF-8 globalmente
+options(encoding = "UTF-8")    
+
+
+#library(basedosdados)
+library(tidyverse)
+library(lubridate)
+
+# Detach plyr if it's loaded to avoid conflicts
+if ("package:plyr" %in% search()) {
+  detach("package:plyr", unload=TRUE)
+}
 
 
 # Defina o seu projeto no Google Cloud
 #set_billing_id("observatorio-portuario")
 
-# Criação da query utilizando basedosdados
- 
-#query <- bdplyr("br_me_caged.microdados_movimentacao") %>%
-#  filter(cnae_2_subclasse %in% c('5231101', '5231102', '5011401', '5011402', '5021101', '5021102', 
-#                                '5022001', '5022002', '5030101', '5030102', '5030103', 
-#                                 '5091201', '5091202', '5099801', '5099899')) %>%
-#  select(ano, mes, sigla_uf, saldo_movimentacao, id_municipio, cnae_2_secao, 
-#         categoria, cnae_2_subclasse, cbo_2002, grau_instrucao, sexo, 
-#         salario_mensal, indicador_trabalho_intermitente, indicador_trabalho_parcial)
+
+# Criação da query utilizando SQL diretamente
+#query <- "
+#SELECT 
+#  ano,
+#  mes,
+#  sigla_uf,
+#  saldo_movimentacao,
+#  id_municipio,
+#  cnae_2_secao,
+#  categoria,
+#  cnae_2_subclasse,
+#  cbo_2002,
+#  grau_instrucao,
+#  sexo,
+#  salario_mensal,
+#  indicador_trabalho_intermitente,
+#  indicador_trabalho_parcial
+#FROM `basedosdados.br_me_caged.microdados_movimentacao`
+#WHERE cnae_2_subclasse IN (
+#      --essas duas subclasses são da divisão 50 TRANSPORTE AQUAVIÁRIO
+#      '5231101', --Administração da infraestrutura portuária
+#      '5231102', --Atividades do operador portuário
+#      --essas outras são novas
+#      '5011401', --Transporte marítimo de cabotagem - carga
+#      '5011402', --Transporte marítimo de cabotagem - passageiros
+#      '5021101', --Transporte por navegação interior de carga, municipal, exceto travessia
+#      '5021102', --Transporte por navegação interior de carga, intermunicipal, interestadual e internacional, exceto travessia
+#      '5022001', --Transporte por navegação interior de passageiros em linhas regulares, municipal, exceto travessia
+#      '5022002', --Transporte por navegação interior de passageiros em linhas regulares, intermunicipal, interestadual e internacional, exceto travessia
+#      '5030101', --Navegação de apoio marítimo
+#      '5030102', --Navegação de apoio portuário
+#      '5030103', --Serviço de rebocadores e empurradores
+#      '5091201', --Transporte por navegação de travessia, municipal
+#      '5091202', --Transporte por navegação de travessia intermunicipal, interestadual e internacional
+#      '5099801', --Transporte aquaviário para passeios turísticos
+#      '5099899', --Outros transportes aquaviários não especificados anteriormente
+#      --novas subclasses incluídas
+#      '5012201', --Transporte marítimo de longo curso - carga
+#      '5012202', --Transporte marítimo de longo curso - passageiros
+#      '5231103', --Gestão de terminais aquaviários
+#      '5232000', --Atividades de agenciamento marítimo
+#      '5239701', --Serviços de praticagem
+#      '5239799' --Atividades auxiliares dos transportes aquaviários não especificadas anteriormente
+#)"
 
 # Coleta dos dados
-#df <- bd_collect(query)
-
+#df <- read_sql(query)
 # Salvar os dados em csv
 #saveRDS(df, file = "df.rds")
-
-# Salvar os dados em csv
-#write.csv(df, "dados_caged.csv", row.names = FALSE)
 
 
 ###################
@@ -32,11 +74,24 @@ library(tidyverse)
 
 #### Leitura do arquivo salvo 
 
-df <- readRDS("data/df.rds")
-  
+df <- readRDS("df.rds")
+
+
 
 # Crie uma nova coluna de data
-df$data <- ymd(paste(df$ano, df$mes, "01"))
+
+# Verifica se há NA e lida com eles antes de criar a coluna data
+df <- df %>%
+  # Remover ou substituir NAs nos anos e meses (depende do que você quer fazer com os NAs)
+  filter(!is.na(ano) & !is.na(mes)) %>%
+  # Certificar que ano e mês estão no formato numérico e são inteiros
+  mutate(
+    ano = as.integer(ano),
+    mes = as.integer(mes),
+    # Cria a coluna data garantindo que o mês seja sempre de dois dígitos
+    data = ymd(paste(ano, sprintf("%02d", mes), "01"))
+  )
+
 
 ##### Fazer label encoding das colunas do tipo factor
 
@@ -62,40 +117,40 @@ df_dois <- df %>%
 df_dois$indicador_trabalho_parcial <- factor(df_dois$indicador_trabalho_parcial)
 
 df_dois$indicador_trabalho_parcial <- fct_recode(df_dois$indicador_trabalho_parcial, 
-                                     'Sim' = '1', 'Nao' = '0', 'NA' = '9')
+                                                 'Sim' = '1', 'Nao' = '0', 'NA' = '9')
 
 df_dois$indicador_trabalho_intermitente <- factor(df_dois$indicador_trabalho_intermitente)
 
 df_dois$indicador_trabalho_intermitente <- fct_recode(df_dois$indicador_trabalho_intermitente, 
-                                          "Sim" = "1", "Nao" = "0", 'NA' = '9')
+                                                      "Sim" = "1", "Nao" = "0", 'NA' = '9')
 
 df_dois$grau_instrucao <- factor(df_dois$grau_instrucao)
 
 df_dois$grau_instrucao <- fct_recode(df_dois$grau_instrucao,    
-                                      'Analfabeto' = '1', 
-                                      'Até 5ª Incompleto' = '2', 
-                                      '5ª Completo Fundamental' = '3', 
-                                      '6ª a 9ª Fundamental' = '4', 
-                                      'Fundamental Completo' = '5',
-                                      'Médio Incompleto' = '6', 
-                                      'Médio Completo' = '7', 
-                                      'Superior Incompleto' = '8', 
-                                      'Superior Completo' = '9', 
-                                      'Mestrado' = '10', 
-                                      'Doutorado' = '11', 
-                                      'Especialização' = '80')
+                                     'Analfabeto' = '1', 
+                                     'Até 5ª Incompleto' = '2', 
+                                     '5ª Completo Fundamental' = '3', 
+                                     '6ª a 9ª Fundamental' = '4', 
+                                     'Fundamental Completo' = '5',
+                                     'Médio Incompleto' = '6', 
+                                     'Médio Completo' = '7', 
+                                     'Superior Incompleto' = '8', 
+                                     'Superior Completo' = '9', 
+                                     'Mestrado' = '10', 
+                                     'Doutorado' = '11', 
+                                     'Especialização' = '80')
 
 
 df_dois$indicador_trabalho_intermitente <- factor(df_dois$indicador_trabalho_intermitente)
 
 
 df_dois$indicador_trabalho_intermitente <- fct_recode(df_dois$indicador_trabalho_intermitente, 
-                                                 'Sim' = '1', 'Nao' = '0', 'NA' = '9')
- 
+                                                      'Sim' = '1', 'Nao' = '0', 'NA' = '9')
+
 df_dois$saldo_movimentacao <- factor(df_dois$saldo_movimentacao)
 
 df_dois$saldo_movimentacao <- fct_recode(df_dois$saldo_movimentacao, 
-                                                      "Admitidos" = "1", "Desligados" = "-1")
+                                         "Admitidos" = "1", "Desligados" = "-1")
 
 
 
@@ -103,7 +158,7 @@ df_dois$saldo_movimentacao <- fct_recode(df_dois$saldo_movimentacao,
 df_dois$sexo <- factor(df_dois$sexo)
 
 df_dois$sexo <- fct_recode(df_dois$sexo, 
-                                         "Homem" = "1", "Mulher" = "3")
+                           "Homem" = "1", "Mulher" = "3")
 
 
 
@@ -168,14 +223,25 @@ df_tres$regiao <- sapply(df_tres$sigla_uf, get_regiao)
 df_selecionado <- df %>%
   select(sigla_uf, saldo_movimentacao, data)
 
-df_resumo <- df_selecionado %>%
+
+df_resumo <- df %>%
   group_by(sigla_uf, year = lubridate::year(data), month = lubridate::month(data)) %>%
   summarize(saldo_somado = sum(saldo_movimentacao, na.rm = TRUE)) %>%
   ungroup()
 
+cat("Verificando df_resumo...\n")
+print(head(df_resumo))
+print(summary(df_resumo$year))
+print(summary(df_resumo$month))
+
+
 df_resumo <- df_resumo %>%
   mutate(data_mes = as.Date(paste(year, month, "01", sep = "-"), format = "%Y-%m-%d")) %>%
   select(sigla_uf, data_mes, saldo_somado)
+
+cat("Verificando data_mes...\n")
+print(head(df_resumo))
+print(summary(df_resumo$data_mes))
 
 
 df_variacao <- df_resumo %>%
@@ -194,6 +260,3 @@ df_variacao <- df_resumo %>%
 # Seleciona o ultimo dado de mes disponivel para analise do mes vigente
 
 ultimo_dado <- df_tres[df_tres$data == max(df_tres$data), ]
-
-
-
