@@ -74,7 +74,7 @@ if ("package:plyr" %in% search()) {
 
 #### Leitura do arquivo salvo 
 
-df <- readRDS("df.rds")
+df <- readRDS("data/df.rds")
 
 
 
