@@ -1,4 +1,24 @@
+# R specific
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+.httr-oauth
+.DS_Store
+
+# Credenciais e segredos
+*.env
+gc-key.json
+*-auth.json
+# Não ignorar a pasta rsconnect, pois contém configurações de deploy
+# Apenas ignorar arquivos sensíveis dentro dela se necessário
+# rsconnect/**/*-auth.json
+
+# Arquivos temporários
+*.log
+*.tmp
+.Renviron
+
+# Arquivos grandes que não devem ser versionados
+# Descomente se necessário
+# data/df.rds
