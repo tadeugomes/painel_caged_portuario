@@ -1,12 +1,9 @@
 name: Update Data and Deploy
 
 on:
-  # Execução programada mensalmente (dia 29 às 03:00 UTC)
+  workflow_dispatch:  # Permite execução manual
   schedule:
-    - cron: '0 3 29 * *'
-  
-  # Permitir execução manual quando necessário
-  workflow_dispatch:
+    - cron: '0 12 29 * *'  # Executa às 12:00 UTC no dia 29 de cada mês
 
 jobs:
   update-and-deploy:
@@ -16,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       
-      - name: Setup R
+      - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: '4.2.0'
@@ -28,27 +25,78 @@ jobs:
       
       - name: Install R dependencies
         run: |
-          install.packages(c("tidyverse", "lubridate", "basedosdados", "rsconnect", "shiny", "shinydashboard", "highcharter", "jsonlite", "RColorBrewer", "DT"))
+          # Instalar pacotes um por um para garantir que todos sejam instalados corretamente
+          install.packages("shiny")
+          install.packages("shinydashboard")
+          install.packages("tidyr")
+          install.packages("dplyr")
+          install.packages("ggplot2")
+          install.packages("readr")
+          install.packages("purrr")
+          install.packages("tibble")
+          install.packages("stringr")
+          install.packages("forcats")
+          install.packages("highcharter")
+          install.packages("jsonlite")
+          install.packages("RColorBrewer")
+          install.packages("DT")
+          install.packages("basedosdados")
+          install.packages("rsconnect")
+          install.packages("lubridate")
+          
+          # Verificar se os pacotes foram instalados corretamente
+          installed_packages <- installed.packages()[,"Package"]
+          required_packages <- c("shiny", "shinydashboard", "tidyr", "dplyr", "ggplot2", 
+                                "readr", "purrr", "tibble", "stringr", "forcats", 
+                                "highcharter", "jsonlite", "RColorBrewer", "DT", 
+                                "basedosdados", "rsconnect", "lubridate")
+          
+          missing_packages <- required_packages[!required_packages %in% installed_packages]
+          
+          if (length(missing_packages) > 0) {
+            stop(paste("Os seguintes pacotes não foram instalados:", paste(missing_packages, collapse=", ")))
+          } else {
+            cat("Todos os pacotes foram instalados com sucesso!\n")
+          }
         shell: Rscript {0}
       
-      - name: Configure Google Cloud credentials
+      - name: Test credentials
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > gc-key.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=gc-key.json" >> $GITHUB_ENV
+          # Criar arquivo temporário para as credenciais do Google Cloud
+          echo "$GOOGLE_APPLICATION_CREDENTIALS" > google-credentials.json
+          
+          # Executar o script de teste específico para GitHub Actions
+          source(".github/scripts/test-credentials.R")
+        shell: Rscript {0}
       
       - name: Update data
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
-          Rscript caged-baixar-dados.R
+          # Criar arquivo temporário para as credenciais do Google Cloud
+          echo "$GOOGLE_APPLICATION_CREDENTIALS" > google-credentials.json
+          
+          # Executar o script específico para GitHub Actions
+          source(".github/scripts/update-data.R")
+        shell: Rscript {0}
+      
+      - name: Deploy to shinyapps.io
+        env:
+          SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
+          SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
+        run: |
+          # Executar o script de deploy específico para GitHub Actions
+          source(".github/scripts/deploy-app.R")
+        shell: Rscript {0}
       
       - name: Commit and push updated data
         run: |
-          git config --local user.email "github-actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git add data/df.rds
-          git commit -m "Update data (automated)" || echo "No changes to commit"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/
+          git commit -m "Atualização automática dos dados [skip ci]" || echo "No changes to commit"
           git push
-      
-      - name: Deploy to shinyapps.io
-        run: |
-          Rscript -e "rsconnect::setAccountInfo(name='observatorioportuario', token='${{ secrets.SHINYAPPS_TOKEN }}', secret='${{ secrets.SHINYAPPS_SECRET }}')"
-          Rscript -e "rsconnect::deployApp(appName='painel_caged_portuario', account='observatorioportuario')"

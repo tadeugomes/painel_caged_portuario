@@ -31,30 +31,37 @@ Para que o workflow funcione corretamente, é necessário configurar os seguinte
 4. Clique em "New repository secret"
 5. Adicione cada um dos segredos mencionados acima
 
-### Teste de Credenciais
+### Workflows Disponíveis
 
-Antes de executar o workflow principal, você pode verificar se as credenciais estão configuradas corretamente:
+#### 1. Test Credentials
 
+Este workflow testa as credenciais do Google Cloud e do shinyapps.io para garantir que estão configuradas corretamente.
+
+**Como executar:**
 1. No GitHub, vá para o repositório
 2. Clique na aba "Actions"
 3. Selecione o workflow "Test Credentials"
-4. Clique em "Run workflow"
+4. Clique em "Run workflow" → "Run workflow"
 
-Este workflow executará apenas os testes de credenciais, sem atualizar dados ou fazer deploy.
+#### 2. Update Data and Deploy
 
-### Execução Manual do Workflow Principal
+Este workflow atualiza os dados do CAGED e faz o deploy do aplicativo para o shinyapps.io.
 
-Além da execução automática, você pode iniciar o workflow principal manualmente:
+**Execução automática:** O workflow é executado automaticamente no dia 29 de cada mês às 12:00 UTC.
 
+**Como executar manualmente:**
 1. No GitHub, vá para o repositório
 2. Clique na aba "Actions"
 3. Selecione o workflow "Update Data and Deploy"
-4. Clique em "Run workflow"
+4. Clique em "Run workflow" → "Run workflow"
 
-### Teste Local de Credenciais
+### Scripts de Suporte
 
-Você também pode testar as credenciais localmente usando o script `test-credentials.R`:
+#### test-credentials.R
 
+Script para testar as credenciais do Google Cloud e do shinyapps.io.
+
+**Como executar localmente:**
 ```r
 # Defina as variáveis de ambiente com suas credenciais
 Sys.setenv(SHINYAPPS_TOKEN = "seu_token")
@@ -63,6 +70,58 @@ Sys.setenv(SHINYAPPS_SECRET = "seu_secret")
 # Execute o script de teste
 source("test-credentials.R")
 ```
+
+#### deploy.R
+
+Script para fazer o deploy do aplicativo para o shinyapps.io.
+
+**Como executar localmente:**
+```r
+# Defina as variáveis de ambiente com suas credenciais
+Sys.setenv(SHINYAPPS_TOKEN = "seu_token")
+Sys.setenv(SHINYAPPS_SECRET = "seu_secret")
+
+# Execute o script de deploy
+source("deploy.R")
+```
+
+#### debug-deploy.R
+
+Script para depurar problemas de deploy para o shinyapps.io. Fornece informações detalhadas sobre o ambiente e o processo de deploy.
+
+**Como executar localmente:**
+```r
+# Defina as variáveis de ambiente com suas credenciais
+Sys.setenv(SHINYAPPS_TOKEN = "seu_token")
+Sys.setenv(SHINYAPPS_SECRET = "seu_secret")
+
+# Execute o script de depuração
+source("debug-deploy.R")
+```
+
+#### test-deploy-local.R
+
+Script para testar o deploy localmente, sem fazer o deploy real. Verifica se o aplicativo está pronto para ser implantado.
+
+**Como executar localmente:**
+```r
+# Defina as variáveis de ambiente com suas credenciais
+Sys.setenv(SHINYAPPS_TOKEN = "seu_token")
+Sys.setenv(SHINYAPPS_SECRET = "seu_secret")
+
+# Execute o script de teste de deploy
+source("test-deploy-local.R")
+```
+
+### Solução de Problemas
+
+Se o workflow falhar, verifique os logs de execução para identificar o problema:
+
+- **Erro de autenticação no shinyapps.io**: Verifique se os tokens estão corretos e não expiraram
+- **Erro de autenticação no Google Cloud**: Verifique se a chave de serviço está correta e se a conta tem as permissões necessárias
+- **Erro no script R**: Verifique os logs para identificar problemas no script de atualização de dados
+
+Para depurar problemas de deploy, execute o script `debug-deploy.R` localmente para obter informações detalhadas sobre o ambiente e o processo de deploy.
 
 ## Estrutura do Projeto
 

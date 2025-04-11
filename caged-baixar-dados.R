@@ -4,9 +4,15 @@ rm(list = ls())
 # Configurar codificação UTF-8 globalmente
 options(encoding = "UTF-8")    
 
-
-#library(basedosdados)
-library(tidyverse)
+# Carregar pacotes individuais em vez do tidyverse
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(forcats)
 library(lubridate)
 library(basedosdados)
 
