@@ -44,6 +44,16 @@ get_data_mapa <- function(mes) {
     mutate(sigla_uf = toupper(sigla_uf))
 }
 
+# Função para converter mês para português
+mes_em_portugues <- function(data) {
+  meses_pt <- c("janeiro", "fevereiro", "março", "abril", "maio", "junho", 
+                "julho", "agosto", "setembro", "outubro", "novembro", "dezembro")
+  mes_num <- as.integer(format(data, "%m"))
+  mes_pt <- meses_pt[mes_num]
+  ano <- format(data, "%Y")
+  return(paste(mes_pt, "de", ano))
+}
+
 # Selecionar o último valor disponível para o mês
 mes_selecionado <- df_resumo %>%
   summarise(ultimo_mes = max(data_mes, na.rm = TRUE)) %>%
@@ -75,10 +85,10 @@ ui <- dashboardPage(
   dashboardHeader(
     title = tags$div(
       tags$strong("Mercado de Trabalho Portuário", 
-                  style = "font-size: 30px; font-weight: bold;"),  # Aumenta o tamanho e deixa em negrito
+                  class = "title-text"),  # Aumenta o tamanho e deixa em negrito
       style = "text-align: center; padding-right: 20px;"
     ),
-    titleWidth = 1800  # Largura ajustada do título
+    titleWidth = NULL  # Permite que a largura seja ajustada dinamicamente
   ),
   
   dashboardSidebar(
@@ -131,7 +141,8 @@ Para uma melhor experiência, abra o painel no seu computador.",
       # Primeira Aba: Gráfico de Linhas, Gráfico de Barras, Mapa, Título e ValueBoxes
       tabItem(tabName = "evolucao",
               fluidRow(
-                tags$h3("Movimentações do emprego formal em novembro de 2024", style = "text-align: center; margin-bottom: 20px;")
+                tags$h3(paste("Movimentações do emprego formal em", mes_em_portugues(mes_selecionado)), 
+                    style = "text-align: center; margin-bottom: 20px;")
               ),
               fluidRow(
                 valueBoxOutput("saldoPaisBox"),
@@ -150,7 +161,7 @@ Para uma melhor experiência, abra o painel no seu computador.",
                                        choices = format(seq.Date(from = min(df_resumo$data_mes), 
                                                                  to = max(df_resumo$data_mes), 
                                                                  by = "month"), "%Y-%m"),
-                                       selected = "2024-11"))
+                                       selected = format(max(df_resumo$data_mes), "%Y-%m")))
                 ),
                 column(5, 
                        box(title = "Saldo por Unidade Federativa", width = NULL, highchartOutput("barchart"), 
