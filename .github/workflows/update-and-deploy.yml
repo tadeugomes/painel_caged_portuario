@@ -66,32 +66,29 @@ jobs:
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
-          # Criar arquivo temporário para as credenciais do Google Cloud
-          writeLines(Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "google-credentials.json")
+          # Write the Google Cloud credentials to a file
+          echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 -d > google-credentials.json
           
-          # Executar o script de teste específico para GitHub Actions
-          source(".github/scripts/test-credentials.R")
-        shell: Rscript {0}
+          # Execute the test script
+          Rscript .github/scripts/test-credentials.R
       
       - name: Update data
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
-          # Criar arquivo temporário para as credenciais do Google Cloud
-          writeLines(Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "google-credentials.json")
+          # Write the Google Cloud credentials to a file
+          echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 -d > google-credentials.json
           
-          # Executar o script específico para GitHub Actions
-          source(".github/scripts/update-data.R")
-        shell: Rscript {0}
+          # Execute the script
+          Rscript .github/scripts/update-data.R
       
       - name: Deploy to shinyapps.io
         env:
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
-          # Executar o script de deploy específico para GitHub Actions
-          source(".github/scripts/deploy-app.R")
-        shell: Rscript {0}
+          # Execute the deploy script
+          Rscript .github/scripts/deploy-app.R
       
       - name: Commit and push updated data
         run: |
