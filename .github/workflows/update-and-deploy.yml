@@ -67,7 +67,7 @@ jobs:
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
           # Write the Google Cloud credentials to a file
-          echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 -d > google-credentials.json
+          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d > google-credentials.json
           
           # Execute the test script
           Rscript .github/scripts/test-credentials.R
@@ -77,7 +77,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         run: |
           # Write the Google Cloud credentials to a file
-          echo "${GOOGLE_APPLICATION_CREDENTIALS}" | base64 -d > google-credentials.json
+          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d > google-credentials.json
           
           # Execute the script
           Rscript .github/scripts/update-data.R
