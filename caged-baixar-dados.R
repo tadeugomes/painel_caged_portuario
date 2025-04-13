@@ -2,6 +2,9 @@
 # Limpar o ambiente (comentado para evitar problemas quando o script é sourced)
 # rm(list = ls())
 
+# Definir repositório CRAN antes de instalar pacotes
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 # Configurar codificação UTF-8 globalmente
 options(encoding = "UTF-8")
 
@@ -10,17 +13,25 @@ if (!dir.exists("data")) {
   dir.create("data")
 }
 
-# Carregar pacotes individuais em vez do tidyverse
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(readr)
-library(purrr)
-library(tibble)
-library(stringr)
-library(forcats)
-library(lubridate)
-library(basedosdados)
+# Função para verificar e instalar pacotes
+install_if_missing <- function(package_name) {
+  if (!requireNamespace(package_name, quietly = TRUE)) {
+    install.packages(package_name)
+  }
+  library(package_name, character.only = TRUE)
+}
+
+# Instalar e carregar pacotes individuais
+install_if_missing("dplyr")
+install_if_missing("tidyr")
+install_if_missing("ggplot2")
+install_if_missing("readr")
+install_if_missing("purrr")
+install_if_missing("tibble")
+install_if_missing("stringr")
+install_if_missing("forcats")
+install_if_missing("lubridate")
+install_if_missing("basedosdados")
 
 # Detach plyr if it's loaded to avoid conflicts
 if ("package:plyr" %in% search()) {

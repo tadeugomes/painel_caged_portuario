@@ -1,14 +1,32 @@
 # Código completo para o aplicativo Shiny
 
-# Verificação e carregamento das bibliotecas necessárias
-if(!require('shiny')) {install.packages('shiny'); library(shiny)}
-if(!require('shinydashboard')) {install.packages('shinydashboard'); library(shinydashboard)}
-if(!require('tidyr')) {install.packages('tidyr'); library(tidyr)}
-if(!require('tidyverse')) {install.packages('tidyverse'); library(tidyverse)}
-if(!require('highcharter')) {install.packages('highcharter'); library(highcharter)}
-if(!require('jsonlite')) {install.packages('jsonlite'); library(jsonlite)}
-if(!require('RColorBrewer')) {install.packages('RColorBrewer'); library(RColorBrewer)}
-if(!require('DT')) {install.packages('DT'); library(DT)}
+# Definir repositório CRAN antes de instalar pacotes
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Função para verificar e instalar pacotes
+install_if_missing <- function(package_name) {
+  if (!requireNamespace(package_name, quietly = TRUE)) {
+    install.packages(package_name)
+  }
+  library(package_name, character.only = TRUE)
+}
+
+# Instalar e carregar pacotes individuais em vez do tidyverse
+install_if_missing("shiny")
+install_if_missing("shinydashboard")
+install_if_missing("tidyr")
+install_if_missing("dplyr")
+install_if_missing("ggplot2")
+install_if_missing("readr")
+install_if_missing("purrr")
+install_if_missing("tibble")
+install_if_missing("stringr")
+install_if_missing("forcats")
+install_if_missing("highcharter")
+install_if_missing("jsonlite")
+install_if_missing("RColorBrewer")
+install_if_missing("DT")
+install_if_missing("lubridate")
 
 # Verificar se o diretório data existe, se não, criar
 if (!dir.exists("data")) {
