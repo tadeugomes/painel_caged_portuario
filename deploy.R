@@ -3,6 +3,18 @@
 # Script para fazer o deploy do aplicativo para o shinyapps.io
 # Este script pode ser executado localmente ou pelo GitHub Actions
 
+# Definir repositório CRAN antes de instalar pacotes
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Desabilitar o uso do renv (se possível)
+Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "FALSE")
+Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "FALSE")
+
+# Configurar renv para ignorar o tidyverse (se renv estiver disponível)
+if (requireNamespace("renv", quietly = TRUE)) {
+  options(renv.settings.ignored.packages = c("tidyverse"))
+}
+
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
 check_and_install <- function(package_name) {
   if (!requireNamespace(package_name, quietly = TRUE)) {
@@ -45,7 +57,10 @@ deploy_app <- function() {
       
       # Listar os arquivos que serão incluídos no deploy
       cat("\nArquivos que serão incluídos no deploy:\n")
-      files_to_deploy <- list.files(recursive = TRUE, all.files = FALSE)
+      all_files <- list.files(recursive = TRUE, all.files = FALSE)
+      
+      # Filtrar arquivos para excluir a pasta data e credencial_google.json
+      files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$", all_files)]
       cat(paste(" -", files_to_deploy), sep = "\n")
       
       # Fazer o deploy do aplicativo
@@ -54,7 +69,8 @@ deploy_app <- function() {
         appName = "painel_caged_portuario",
         account = "observatorioportuario",
         forceUpdate = TRUE,
-        launch.browser = FALSE
+        launch.browser = FALSE,
+        appFiles = files_to_deploy  # Especificar quais arquivos incluir
       )
       
       cat(paste0("✓ Deploy concluído com sucesso! URL: ", deployment$url, "\n"))

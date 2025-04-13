@@ -6,6 +6,15 @@
 # Definir repositório CRAN antes de instalar pacotes
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
+# Desabilitar o uso do renv (se possível)
+Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "FALSE")
+Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "FALSE")
+
+# Configurar renv para ignorar o tidyverse (se renv estiver disponível)
+if (requireNamespace("renv", quietly = TRUE)) {
+  options(renv.settings.ignored.packages = c("tidyverse"))
+}
+
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
 check_and_install <- function(package_name) {
   if (!requireNamespace(package_name, quietly = TRUE)) {
