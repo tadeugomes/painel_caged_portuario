@@ -3,6 +3,9 @@
 # Script para depurar problemas de deploy para o shinyapps.io
 # Este script fornece informações detalhadas sobre o ambiente e o processo de deploy
 
+# Definir repositório CRAN antes de instalar pacotes
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
 check_and_install <- function(package_name) {
   if (!requireNamespace(package_name, quietly = TRUE)) {
@@ -87,8 +90,10 @@ check_app_dependencies <- function() {
   cat("=== Verificação de Dependências do Aplicativo ===\n")
   
   # Lista de pacotes necessários para o aplicativo
-  required_packages <- c("shiny", "shinydashboard", "tidyr", "tidyverse", "highcharter", 
-                         "jsonlite", "RColorBrewer", "DT", "basedosdados", "rsconnect", "lubridate")
+  required_packages <- c("shiny", "shinydashboard", "tidyr", "dplyr", "ggplot2", 
+                         "readr", "purrr", "tibble", "stringr", "forcats", 
+                         "highcharter", "jsonlite", "RColorBrewer", "DT", 
+                         "basedosdados", "rsconnect", "lubridate")
   
   # Verificar cada pacote
   for (pkg in required_packages) {

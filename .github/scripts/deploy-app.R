@@ -3,6 +3,9 @@
 # Script para fazer o deploy do aplicativo para o shinyapps.io a partir do GitHub Actions
 # Este script é chamado pelo workflow do GitHub Actions
 
+# Definir repositório CRAN antes de instalar pacotes
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
 check_and_install <- function(package_name) {
   if (!requireNamespace(package_name, quietly = TRUE)) {
