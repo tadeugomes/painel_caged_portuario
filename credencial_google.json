@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "observatorio-portuario",
+  "private_key_id": "ef8102107bbbe1e0164d5853c39685f736e5a71f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1LLQXTid4+P3Q\nAobeuWh5wlD3THdvcUVYrVoKTMykxFSF+kfiHvCl+qeuWG92PyrhbPO6tzQWj5ZF\ng80y7cJxdYbjpPcOSov4hScOs4//u26MuX6F5RFnMXpr0mCCtGt9A+2RvmdKwIfR\nNQ+A0i07D8sJII/y514pRDU1JQI2pZNvupAiLibdPjL+v7DMvYIyPboesufUfwfo\n1aPq6c4Xr8zITMA7VyrmbyNEhMNcuz7DjqE++/eCGdMlrWE/U2HwzLhjqeWSQwRq\nevHlNIo5Y7sge2NthSQ/RuftQJXfQ4/w76nlJoYyPZ2jdo00W1FKlzvEGEzAxJra\nny7GYJcLAgMBAAECggEAOA27MGS1ULfUq2lEuh8qJFXLACBP6ZJljrCfpYUqYaX+\nsq8DU4IYGXpKK+ZfofmcNj+jzvaErqBBMYO8Vo/6M2lV0RPGfkzxLnRf56wFlu0y\nIGb5rsp3DnLf+gEObBIPGZBADfIXeijEPKWKhORCKz5RJqNE9jXAS8s3HRi0rRwZ\n2J8egNtW/EMY9QDXULXB9nMiplbVHSnOpQj1jLDiRPNsfw9nsDGYo/+cX7p15SAQ\n3xP1l9PcWaNPBOVV25UxhhsJgLdcrRyDYMfsqrTwRxc+nCzQ0WN49HjlxwSW/9s6\nbWvqoTpBGyct9BtCWYQzOSY913fFnePXV+bPU9EFXQKBgQD2vJN8FcsurrN96Sm/\ngsgQtMohNykU9RIcJuoHJ7pR+YunogpzvHVFxdRYQJt3Dv0c4c0VBLdW+BioQDVt\nNSesUWeMKXoV58UVIpklvxzFcuRZ7XapQ43PRL2oylSFcFI5beRQ1uXPEixhsY5o\nuLrLdnrm+ublEB26XwqJQhaRZQKBgQC7+gA1k1kuL5a0gJUpe/EnoOcP5lBdqhca\nEdT0dPpbgIDvwbEymX5GpsdLBT00jD07mro10L0igwbpAGTpMG54tRXAQE/TCytA\nL/JYAW76qrCSfXWF6TGjZWMe9IgVQCs6dmoexLk/DvGP1mSsmcuAyvugBLIAIlAj\nF3CfjLS3rwKBgDUxiJZa2HgS/+1oRDDekCVR5LXuf3PeNe5N0WyDex7LLvmP7LLw\n8VN+h/4Sx7GOULFWWPFsF96vFBnJ5frKV+hFkI5eLszkL9ATqnLB1gEXePWORWPO\nhZcm2cC3BivSgFeTQoLPIbJX16ukLPCUyuisfWiotPizVcVlUg8vaVAlAoGAasGd\nBNBeQaC9Ul4EWL8PQpZbI+iFk+xZmnCuJPeaiAT/NSsn27jYwn9NiAm9rO5IiGVj\ng9S81bDcZ8/Vf6oF03/kjn731r/tHFMeq2SFBs+R4GBoMlkx275lANuXvZnn8xf1\nROws2Oc/wZTdMDlYHhkptsNz5CeYo5VYXQSoTfkCgYEAqKS39yAdH+j191jTfIKQ\nfHIjcHHGkdBriZ5V383lS1IE2vHWg93BKc/KvUHNSLwXAZx71wT+zLtNTp0uuRXR\nDrsJLc3/Rc1SKRnlp40HPHHaz3BAGp/OZXb7J++gCXNdm1iyNdTsVpNq6UV9c2g7\n2WQM2Fnfo2s7d0rwsPwk0pc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "painel-caged@observatorio-portuario.iam.gserviceaccount.com",
+  "client_id": "104665608437489937170",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/painel-caged%40observatorio-portuario.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

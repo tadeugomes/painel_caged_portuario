@@ -28,13 +28,18 @@ library(basedosdados)
 update_data <- function() {
   cat("Iniciando a atualização dos dados do CAGED a partir do GitHub Actions...\n")
   
-  # Verificar se as credenciais do Google Cloud estão definidas
-  if (!file.exists("google-credentials.json")) {
-    stop("Arquivo de credenciais do Google Cloud não encontrado")
+  # Verificar se a variável de ambiente está definida
+  credentials_path <- Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+  if (credentials_path == "") {
+    stop("Variável de ambiente GOOGLE_APPLICATION_CREDENTIALS não definida")
   }
   
-  # Configurar as credenciais do Google Cloud
-  Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "google-credentials.json")
+  # Verificar se o arquivo de credenciais existe
+  if (!file.exists(credentials_path)) {
+    stop(paste0("Arquivo de credenciais do Google Cloud não encontrado: ", credentials_path))
+  }
+  
+  cat(paste0("✓ Usando arquivo de credenciais: ", credentials_path, "\n"))
   
   # Executar o script de atualização de dados
   cat("Executando o script caged-baixar-dados.R...\n")

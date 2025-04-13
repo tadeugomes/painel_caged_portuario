@@ -60,25 +60,19 @@ jobs:
           }
         shell: Rscript {0}
       
-        - name: Test credentials
+      - name: Test credentials
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/credencial_google.json
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
-          # Create a temporary file for Google Cloud credentials
-          printf "%s" "$GOOGLE_APPLICATION_CREDENTIALS" > google-credentials.json
-          
-          # Execute the specific test script for GitHub Actions
+          # Execute the test script
           Rscript .github/scripts/test-credentials.R
       
       - name: Update data
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/credencial_google.json
         run: |
-          # Write the Google Cloud credentials to a file
-          printf '%s' "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d > google-credentials.json
-          
           # Execute the script
           Rscript .github/scripts/update-data.R
       

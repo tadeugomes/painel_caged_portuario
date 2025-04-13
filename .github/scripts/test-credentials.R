@@ -20,14 +20,20 @@ check_and_install("rsconnect")
 test_google_cloud <- function() {
   cat("Testando credenciais do Google Cloud...\n")
   
-  # Verificar se o arquivo de credenciais existe
-  if (!file.exists("google-credentials.json")) {
-    cat("✗ Arquivo de credenciais do Google Cloud não encontrado\n")
+  # Verificar se a variável de ambiente está definida
+  credentials_path <- Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+  if (credentials_path == "") {
+    cat("✗ Variável de ambiente GOOGLE_APPLICATION_CREDENTIALS não definida\n")
     return(FALSE)
   }
   
-  # Configurar as credenciais do Google Cloud
-  Sys.setenv(GOOGLE_APPLICATION_CREDENTIALS = "google-credentials.json")
+  # Verificar se o arquivo de credenciais existe
+  if (!file.exists(credentials_path)) {
+    cat(paste0("✗ Arquivo de credenciais do Google Cloud não encontrado: ", credentials_path, "\n"))
+    return(FALSE)
+  }
+  
+  cat(paste0("✓ Usando arquivo de credenciais: ", credentials_path, "\n"))
   
   tryCatch({
     # Tentar configurar o projeto no Google Cloud
