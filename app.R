@@ -10,7 +10,26 @@ if(!require('jsonlite')) {install.packages('jsonlite'); library(jsonlite)}
 if(!require('RColorBrewer')) {install.packages('RColorBrewer'); library(RColorBrewer)}
 if(!require('DT')) {install.packages('DT'); library(DT)}
 
-source("caged-baixar-dados.R")
+# Verificar se o diretório data existe, se não, criar
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+# Verificar se o arquivo de dados existe, se não, baixar
+if (!file.exists("data/df.rds") || !file.exists("data/cbo2002.csv")) {
+  # Verificar se o arquivo cbo2002.csv existe
+  if (!file.exists("data/cbo2002.csv")) {
+    # Criar um arquivo cbo2002.csv vazio para evitar erros
+    # Este arquivo será preenchido pelo script caged-baixar-dados.R
+    file.create("data/cbo2002.csv")
+  }
+  
+  # Executar o script para baixar os dados
+  source("caged-baixar-dados.R")
+} else {
+  # Se os dados já existem, apenas carregar
+  source("caged-baixar-dados.R")
+}
 
 # URL para o arquivo GeoJSON dos estados brasileiros
 geojson_url <- "https://code.highcharts.com/mapdata/countries/br/br-all.geo.json"

@@ -43,9 +43,14 @@ deploy_app <- function() {
   
   cat("✓ Credenciais do shinyapps.io configuradas corretamente!\n")
   
+  # Obter lista de todos os arquivos no diretório
+  all_files <- list.files(recursive = TRUE, all.files = FALSE)
+  
+  # Filtrar arquivos para excluir a pasta data e credencial_google.json
+  files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$", all_files)]
+  
   # Listar os arquivos que serão incluídos no deploy
   cat("\nArquivos que serão incluídos no deploy:\n")
-  files_to_deploy <- list.files(recursive = TRUE, all.files = FALSE)
   cat(paste(" -", files_to_deploy), sep = "\n")
   
   # Fazer o deploy do aplicativo
@@ -54,7 +59,8 @@ deploy_app <- function() {
     appName = "painel_caged_portuario",
     account = "observatorioportuario",
     forceUpdate = TRUE,
-    launch.browser = FALSE
+    launch.browser = FALSE,
+    appFiles = files_to_deploy  # Especificar quais arquivos incluir
   )
   
   cat(paste0("✓ Deploy concluído com sucesso! URL: ", deployment$url, "\n"))

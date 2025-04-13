@@ -1,8 +1,14 @@
 
-rm(list = ls())
+# Limpar o ambiente (comentado para evitar problemas quando o script é sourced)
+# rm(list = ls())
 
 # Configurar codificação UTF-8 globalmente
-options(encoding = "UTF-8")    
+options(encoding = "UTF-8")
+
+# Verificar se o diretório data existe, se não, criar
+if (!dir.exists("data")) {
+  dir.create("data")
+}
 
 # Carregar pacotes individuais em vez do tidyverse
 library(dplyr)
