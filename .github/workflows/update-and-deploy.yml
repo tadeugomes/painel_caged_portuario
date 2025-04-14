@@ -12,54 +12,26 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+        
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: '4.2.0'
-      
+          r-version: '4.2.0' # Mantenha a versão do R consistente com seu renv.lock
+          
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
-      
-      - name: Install R dependencies
-        run: |
-          # Instalar pacotes um por um para garantir que todos sejam instalados corretamente
-          install.packages("shiny")
-          install.packages("shinydashboard")
-          install.packages("tidyr")
-          install.packages("dplyr")
-          install.packages("ggplot2")
-          install.packages("readr")
-          install.packages("purrr")
-          install.packages("tibble")
-          install.packages("stringr")
-          install.packages("forcats")
-          install.packages("highcharter")
-          install.packages("jsonlite")
-          install.packages("RColorBrewer")
-          install.packages("DT")
-          install.packages("basedosdados")
-          install.packages("rsconnect")
-          install.packages("lubridate")
           
-          # Verificar se os pacotes foram instalados corretamente
-          installed_packages <- installed.packages()[,"Package"]
-          required_packages <- c("shiny", "shinydashboard", "tidyr", "dplyr", "ggplot2", 
-                                "readr", "purrr", "tibble", "stringr", "forcats", 
-                                "highcharter", "jsonlite", "RColorBrewer", "DT", 
-                                "basedosdados", "rsconnect", "lubridate")
-          
-          missing_packages <- required_packages[!required_packages %in% installed_packages]
-          
-          if (length(missing_packages) > 0) {
-            stop(paste("Os seguintes pacotes não foram instalados:", paste(missing_packages, collapse=", ")))
-          } else {
-            cat("Todos os pacotes foram instalados com sucesso!\n")
-          }
-        shell: Rscript {0}
-      
+      # REMOVIDO o passo antigo "Install R dependencies" que usava install.packages
+
+      # ADICIONADO: Restaurar pacotes R usando renv
+      - name: Restore R environment from renv.lock
+        uses: r-lib/actions/setup-renv@v2 
+        # Esta action irá executar renv::restore() para instalar os pacotes
+        # exatamente como definidos no seu arquivo renv.lock e também
+        # configurará cache para acelerar execuções futuras.
+        
       - name: Test credentials
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/credencial_google.json
@@ -68,26 +40,29 @@ jobs:
         run: |
           # Execute the test script
           Rscript .github/scripts/test-credentials.R
-      
+          
       - name: Update data
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/credencial_google.json
         run: |
           # Execute the script
           Rscript .github/scripts/update-data.R
-      
+          
       - name: Deploy to shinyapps.io
         env:
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
         run: |
           # Execute the deploy script
-          Rscript .github/scripts/deploy-app.R
-      
+          Rscript .github/scripts/deploy-app.R 
+          # Certifique-se que este script (.github/scripts/deploy-app.R)
+          # apenas faz o deploy e não tenta instalar pacotes ou fazer snapshot.
+          
       - name: Commit and push updated data
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add data/
-          git commit -m "Atualização automática dos dados [skip ci]" || echo "No changes to commit"
+          # Usa '|| true' para não falhar se não houver mudanças para commitar
+          git commit -m "Atualização automática dos dados [skip ci]" || true 
           git push

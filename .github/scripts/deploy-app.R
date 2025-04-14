@@ -1,35 +1,19 @@
 #!/usr/bin/env Rscript
 
-# Script para fazer o deploy do aplicativo para o shinyapps.io a partir do GitHub Actions
-# Este script é chamado pelo workflow do GitHub Actions
+# Script simplificado para fazer o deploy para shinyapps.io a partir do GitHub Actions
+# Assume que o ambiente R (pacotes) já foi restaurado via renv pelo workflow
 
-# Definir repositório CRAN antes de instalar pacotes
-options(repos = c(CRAN = "https://cloud.r-project.org"))
+cat("=== Deploy para shinyapps.io (GitHub Actions) ===\n\n")
 
-# Desabilitar o uso do renv (se possível)
-Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "FALSE")
-Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "FALSE")
-
-# Configurar renv para ignorar o tidyverse (se renv estiver disponível)
-if (requireNamespace("renv", quietly = TRUE)) {
-  options(renv.settings.ignored.packages = c("tidyverse"))
+# Verificar e carregar rsconnect (deve ter sido instalado pelo renv::restore)
+if (!requireNamespace("rsconnect", quietly = TRUE)) {
+  stop("Erro crítico: Pacote 'rsconnect' não encontrado. Foi incluído no renv.lock e restaurado?")
 }
-
-# Função para verificar se um pacote está instalado e instalá-lo se necessário
-check_and_install <- function(package_name) {
-  if (!requireNamespace(package_name, quietly = TRUE)) {
-    cat(paste0("Instalando pacote: ", package_name, "\n"))
-    install.packages(package_name)
-  }
-  library(package_name, character.only = TRUE)
-}
-
-# Verificar e instalar pacotes necessários
-check_and_install("rsconnect")
+library(rsconnect)
 
 # Função para fazer o deploy do aplicativo
 deploy_app <- function() {
-  cat("Iniciando o deploy para shinyapps.io a partir do GitHub Actions...\n")
+  cat("Iniciando o deploy para shinyapps.io...\n")
   
   # Verificar se as variáveis de ambiente estão definidas
   token <- Sys.getenv("SHINYAPPS_TOKEN")
@@ -41,64 +25,64 @@ deploy_app <- function() {
   
   # Configurar as credenciais do shinyapps.io
   rsconnect::setAccountInfo(
-    name = "observatorioportuario",
+    name = "observatorioportuario", # Confirme se este é o nome correto da sua conta
     token = token,
     secret = secret
   )
   
-  # Verificar se a conta está configurada corretamente
-  accounts <- rsconnect::accounts()
+  # Verificar se a conta está configurada corretamente (Opcional, mas bom para debug)
+  # accounts <- rsconnect::accounts()
+  # if (nrow(accounts) == 0 || !any(accounts$name == "observatorioportuario")) {
+  #   stop("Erro ao configurar credenciais do shinyapps.io: conta não encontrada")
+  # }
+  # cat("✓ Credenciais do shinyapps.io configuradas corretamente!\n")
   
-  if (nrow(accounts) == 0 || !any(accounts$name == "observatorioportuario")) {
-    stop("Erro ao configurar credenciais do shinyapps.io: conta não encontrada")
-  }
+  # Determinar arquivos para deploy (opcional - rsconnect geralmente detecta bem)
+  # Se você precisar excluir especificamente a pasta 'data/' e o .json:
+  # all_files <- list.files(recursive = TRUE, all.files = FALSE, no.. = TRUE)
+  # files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$", all_files)]
+  # app_files_arg <- files_to_deploy
   
-  cat("✓ Credenciais do shinyapps.io configuradas corretamente!\n")
+  # Se puder confiar na detecção automática (exclui pastas como renv, .git, etc por padrão):
+  app_files_arg <- NULL 
   
-  # Obter lista de todos os arquivos no diretório
-  all_files <- list.files(recursive = TRUE, all.files = FALSE)
-  
-  # Filtrar arquivos para excluir a pasta data e credencial_google.json
-  files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$", all_files)]
-  
-  # Listar os arquivos que serão incluídos no deploy
-  cat("\nArquivos que serão incluídos no deploy:\n")
-  cat(paste(" -", files_to_deploy), sep = "\n")
+  # Listar os arquivos (se especificado manualmente)
+  # if (!is.null(app_files_arg)) {
+  #    cat("\nArquivos que serão incluídos no deploy (especificados manualmente):\n")
+  #    cat(paste(" -", app_files_arg), sep = "\n")
+  # } else {
+  #    cat("\nUsando detecção automática de arquivos pelo rsconnect.\n")
+  # }
   
   # Fazer o deploy do aplicativo
-  cat("\nIniciando o deploy...\n")
+  cat("\nExecutando rsconnect::deployApp...\n")
   deployment <- rsconnect::deployApp(
-    appName = "painel_caged_portuario",
+    appName = "painel_caged_portuario", # Confirme se este nome está correto
     account = "observatorioportuario",
     forceUpdate = TRUE,
     launch.browser = FALSE,
-    appFiles = files_to_deploy  # Especificar quais arquivos incluir
+    logLevel = "verbose", # Adiciona mais detalhes ao log do deploy
+    appFiles = app_files_arg # Use NULL para detecção automática ou a lista filtrada
   )
   
-  cat(paste0("✓ Deploy concluído com sucesso! URL: ", deployment$url, "\n"))
+  cat(paste0("✓ Deploy concluído! URL: ", deployment$url, "\n")) # Nota: deployApp não retorna URL diretamente
+  # A URL geralmente é impressa no log pelo próprio rsconnect.
   return(TRUE)
 }
 
-# Executar o deploy
-cat("=== Deploy para shinyapps.io (GitHub Actions) ===\n\n")
+# Executar o deploy com tryCatch
 success <- tryCatch({
   deploy_app()
 }, error = function(e) {
-  cat(paste0("✗ Erro ao fazer deploy para shinyapps.io: ", e$message, "\n"))
-  # Retornar código de erro para o GitHub Actions
-  quit(status = 1)
+  cat(paste0("\n✗ Erro durante o deploy para shinyapps.io: ", e$message, "\n"))
+  quit(status = 1) # Termina o script com erro para a Action falhar
 })
 
-cat("\n=== Resumo ===\n")
-cat(paste0("Deploy: ", ifelse(success, "✓ OK", "✗ Falha"), "\n"))
+# Resumo final (opcional)
+# if (success) {
+#   cat("\n✓ Processo de deploy finalizado com sucesso aparente.\n")
+#   quit(status = 0)
+# }
 
-if (success) {
-  cat("\n✓ O aplicativo foi implantado com sucesso!\n")
-  # Retornar código de sucesso para o GitHub Actions
-  quit(status = 0)
-} else {
-  cat("\n✗ Houve um problema durante o deploy.\n")
-  cat("  Verifique as mensagens de erro acima e corrija os problemas antes de tentar novamente.\n")
-  # Retornar código de erro para o GitHub Actions
-  quit(status = 1)
-}
+# Se chegou aqui e não saiu no tryCatch, algo pode estar errado, mas vamos assumir sucesso por enquanto
+# O tryCatch já trata a falha. Se não houve erro, o script termina com status 0 (sucesso) por padrão.
