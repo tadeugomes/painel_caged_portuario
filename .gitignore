@@ -22,3 +22,11 @@ gc-key.json
 # Arquivos grandes que não devem ser versionados
 # Descomente se necessário
 # data/df.rds
+
+# Docker
+dockerfile
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+.docker/

@@ -130,7 +130,6 @@ Para depurar problemas de deploy, execute o script `debug-deploy.R` localmente p
 - `data/`: Diretório contendo os dados processados
 - `www/`: Diretório contendo recursos estáticos (imagens, etc.)
 - `rsconnect/`: Configurações de deploy para o shinyapps.io
-- `dockerfile`: Configuração para containerização com Docker
 
 ## Desenvolvimento Local
 

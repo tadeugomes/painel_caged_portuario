@@ -26,6 +26,7 @@ check_and_install <- function(package_name) {
 
 # Verificar e instalar pacotes necessários
 check_and_install("rsconnect")
+check_and_install("shiny")
 
 # Função para fazer o deploy do aplicativo
 deploy_app <- function() {
