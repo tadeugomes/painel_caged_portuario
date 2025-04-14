@@ -1,12 +1,8 @@
 #!/usr/bin/env Rscript
 
 # Script para fazer o deploy do aplicativo para o shinyapps.io a partir do GitHub Actions
-# Este script garante que o tidyverse e outras dependências estejam instalados antes do deploy
+# Este script assume que o ambiente já foi restaurado via renv pelo workflow do GitHub Actions
 
-# Definir repositório CRAN antes de instalar pacotes
-options(repos = c(CRAN = "https://cloud.r-project.org"))
-
-# Executar o script de preparação do ambiente
 cat("=== Executando script de preparação do ambiente ===\n")
 prepare_result <- tryCatch({
   source("github-action-prepare.R")
@@ -21,25 +17,10 @@ if (!prepare_result) {
   quit(status = 1)
 }
 
-# Habilitar o uso do renv
-if (requireNamespace("renv", quietly = TRUE)) {
-  Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "TRUE")
-  Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "TRUE")
-}
-
-# Função para verificar se um pacote está instalado e instalá-lo se necessário
-check_and_install <- function(package_name) {
-  if (!requireNamespace(package_name, quietly = TRUE)) {
-    cat(paste0("Instalando pacote: ", package_name, "\n"))
-    install.packages(package_name)
-  }
-  library(package_name, character.only = TRUE)
-}
-
-# Verificar e instalar pacotes necessários
-check_and_install("rsconnect")
-check_and_install("shiny")
-check_and_install("tidyverse")  # Garantir que o tidyverse esteja instalado
+# Carregar pacotes necessários (assumindo que já estão instalados via renv)
+library(rsconnect)
+library(shiny)
+library(tidyverse)
 
 # Função para fazer o deploy do aplicativo
 deploy_app <- function() {
