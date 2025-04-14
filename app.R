@@ -1,5 +1,10 @@
 # Código completo para o aplicativo Shiny
 
+# Carregar renv se disponível
+if (file.exists("renv/activate.R")) {
+  source("renv/activate.R")
+}
+
 # Definir repositório CRAN antes de instalar pacotes
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 

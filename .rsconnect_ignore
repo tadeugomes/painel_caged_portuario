@@ -5,7 +5,3 @@ data/
 credencial_google.json
 gc-key.json
 *-auth.json
-
-# Ignore renv files
-renv/
-renv.lock

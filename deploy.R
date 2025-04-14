@@ -6,13 +6,10 @@
 # Definir repositório CRAN antes de instalar pacotes
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
-# Desabilitar o uso do renv (se possível)
-Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "FALSE")
-Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "FALSE")
-
-# Configurar renv para ignorar o tidyverse (se renv estiver disponível)
+# Habilitar o uso do renv
 if (requireNamespace("renv", quietly = TRUE)) {
-  options(renv.settings.ignored.packages = c("tidyverse"))
+  Sys.setenv(RENV_CONFIG_AUTO_SNAPSHOT = "TRUE")
+  Sys.setenv(RENV_CONFIG_AUTO_RESTORE = "TRUE")
 }
 
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
@@ -60,8 +57,8 @@ deploy_app <- function() {
       cat("\nArquivos que serão incluídos no deploy:\n")
       all_files <- list.files(recursive = TRUE, all.files = FALSE)
       
-      # Filtrar arquivos para excluir a pasta data e credencial_google.json
-      files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$", all_files)]
+      # Filtrar arquivos para excluir apenas a pasta data e arquivos de credenciais
+      files_to_deploy <- all_files[!grepl("^data/|^credencial_google\\.json$|^gc-key\\.json$|^.*-auth\\.json$", all_files)]
       cat(paste(" -", files_to_deploy), sep = "\n")
       
       # Fazer o deploy do aplicativo
