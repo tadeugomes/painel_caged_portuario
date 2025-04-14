@@ -1,3 +1,4 @@
+source("renv/activate.R")
 # Configurar mirror CRAN
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
