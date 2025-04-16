@@ -17,6 +17,9 @@ if (!prepare_result) {
   quit(status = 1)
 }
 
+# Instalar o pacote tidyverse
+install.packages("tidyverse")
+
 # Carregar pacotes necessários (assumindo que já estão instalados via renv)
 library(rsconnect)
 library(shiny)
