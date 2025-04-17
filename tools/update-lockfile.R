@@ -1,3 +1,8 @@
 # Actualiza MASS para a versão mais recente disponível no CRAN
-renv::install("MASS")          # instala o release actual (ex.: 7.3‑64)
-renv::snapshot(confirm = FALSE) # re‑grava o renv.lock
+
+
+renv::status()
+
+install.packages("MASS", version = "7.3-64")   # instala último release compatível
+renv::snapshot(confirm = FALSE)                # grava 7.3‑64 e o campo "Repository"
+
