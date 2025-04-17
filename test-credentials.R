@@ -3,7 +3,9 @@
 # Script para testar as credenciais do Google Cloud e shinyapps.io
 # Este script pode ser executado localmente para verificar se as credenciais estão configuradas corretamente
 # antes de executar o workflow do GitHub Actions
-
+if (nzchar(Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS"))) {
+  bigrquery::bq_auth(path = Sys.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+}
 # Função para verificar se um pacote está instalado e instalá-lo se necessário
 check_and_install <- function(package_name) {
   if (!requireNamespace(package_name, quietly = TRUE)) {
