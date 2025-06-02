@@ -1,32 +1,28 @@
-# R specific
-.Rproj.user
+# Arquivos temporários do R
 .Rhistory
+.Rapp.history
 .RData
 .Ruserdata
-.httr-oauth
-.DS_Store
+.Rproj.user/
 
-# Credenciais e segredos
-*.env
-gc-key.json
-*-auth.json
-# Não ignorar a pasta rsconnect, pois contém configurações de deploy
-# Apenas ignorar arquivos sensíveis dentro dela se necessário
-# rsconnect/**/*-auth.json
+# Diretórios de ambiente local
+renv/
+renv.lock
+.Renviron
+.Rprofile
 
-# Arquivos temporários
+# Arquivos do RStudio
+*.Rproj
+.Rproj.user/
+
+# Dados temporários e caches
 *.log
 *.tmp
-.Renviron
+*.bak
+.DS_Store
+*.swp
 
-# Arquivos grandes que não devem ser versionados
-# Descomente se necessário
-# data/df.rds
-
-# Docker
-dockerfile
-Dockerfile
-docker-compose.yml
-docker-compose.*.yml
-.dockerignore
-.docker/
+# Diretórios de output
+/output/
+data-raw/
+cache/
