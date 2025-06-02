@@ -3,13 +3,6 @@
 .Rapp.history
 .RData
 .Ruserdata
-.Rproj.user/
-
-# Diretórios de ambiente local
-renv/
-renv.lock
-.Renviron
-.Rprofile
 
 # Arquivos do RStudio
 *.Rproj
@@ -22,7 +15,17 @@ renv.lock
 .DS_Store
 *.swp
 
-# Diretórios de output
+# Diretórios de output não usados no deploy
 /output/
 data-raw/
 cache/
+
+# IGNORAR renv (não está mais em uso)
+renv/
+renv.lock
+.Renviron
+.Rprofile
+
+# Importante: versionar diretórios relevantes para o app
+!data/
+!www/

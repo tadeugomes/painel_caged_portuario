@@ -4,16 +4,6 @@ options(repos = c(
   CRAN = "https://packagemanager.posit.co/cran/latest"
 ))
 
-
-# Carregar explicitamente o pacote principal
-library(shiny)
- 
-# Carregar renv se disponível
-if (file.exists("renv/activate.R")) {
-  source("renv/activate.R")
-}
-
- 
 library(shiny)
 library(shinydashboard)
 library(tidyr)
@@ -31,23 +21,18 @@ library(DT)
 library(lubridate)
 library(igraph)
 
+# Inicializa variáveis para evitar erro global
+df_resumo <- NULL
+br_map <- NULL
 
-# Verificar se o diretório data existe, se não, criar
-if (!dir.exists("data")) {
-  dir.create("data")
+# Apenas execute em ambiente interativo
+if (interactive()) {
+  source("caged-baixar-dados.R")
+  geojson_url <- "https://code.highcharts.com/mapdata/countries/br/br-all.geo.json"
+  br_map <- fromJSON(geojson_url, simplifyVector = FALSE)
 }
 
-# Executar o script para baixar e tratar os dados
-source("caged-baixar-dados.R")
-
-
-# URL para o arquivo GeoJSON dos estados brasileiros
-geojson_url <- "https://code.highcharts.com/mapdata/countries/br/br-all.geo.json"
-
-# Carrega o arquivo GeoJSON
-br_map <- fromJSON(geojson_url, simplifyVector = FALSE)
-
-# Função para criar a tabela cruzada generalizada
+# Criação de funções permanece fora
 criar_crosstable_generalizado <- function(data, var1, var2) {
   data %>%
     group_by(!!sym(var1), !!sym(var2)) %>%
@@ -55,7 +40,6 @@ criar_crosstable_generalizado <- function(data, var1, var2) {
     spread(!!sym(var2), n, fill = 0)
 }
 
-# Função para obter dados com base no mês
 get_data <- function(mes) {
   df_resumo %>%
     filter(data_mes == mes) %>%
@@ -64,7 +48,6 @@ get_data <- function(mes) {
     select(sigla_uf, saldo_somado)
 }
 
-# Função para obter dados para o mapa
 get_data_mapa <- function(mes) {
   df_resumo %>%
     filter(data_mes == mes) %>%
