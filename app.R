@@ -1,36 +1,51 @@
 # Código completo para o aplicativo Shiny
 
+# Configuração inicial de logs
+options(shiny.trace=TRUE)
+options(shiny.fullstacktrace=TRUE)
+options(shiny.error=function() {
+  cat(file=stderr(), paste0("ERRO em ", Sys.time(), ":\n"))
+  traceback(2)
+})
+
+# Verificação de arquivos e diretórios
+cat("Verificando diretório de trabalho:", getwd(), "\n")
+cat("Listando arquivos no diretório atual:\n")
+print(list.files())
+cat("Verificando pasta data:\n")
+print(list.files("data"))
+
 options(repos = c(
   CRAN = "https://packagemanager.posit.co/cran/latest"
 ))
 
-library(shiny)
-library(shinydashboard)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(readr)
-library(purrr)
-library(tibble)
-library(stringr)
-library(forcats)
-library(highcharter)
-library(jsonlite)
-library(RColorBrewer)
-library(DT)
-library(lubridate)
-library(igraph)
+# Carregar pacotes com verificação
+for(pkg in c('shiny', 'shinydashboard', 'tidyr', 'dplyr', 'ggplot2', 'readr', 
+             'purrr', 'tibble', 'stringr', 'forcats', 'highcharter', 'jsonlite',
+             'RColorBrewer', 'DT', 'lubridate', 'igraph')) {
+  cat("Carregando pacote:", pkg, "\n")
+  library(pkg, character.only = TRUE)
+}
 
-# Inicializa variáveis para evitar erro global
-df_resumo <- NULL
-br_map <- NULL
 
-# Apenas execute em ambiente interativo
-if (interactive()) {
+
+# Captura de erros de inicialização
+tryCatch({
   source("caged-baixar-dados.R")
+  cat("[INFO] caged-baixar-dados.R carregado com sucesso\n")
+}, error = function(e) {
+  cat("[ERRO] Falha ao carregar caged-baixar-dados.R:\n", conditionMessage(e), "\n")
+})
+
+tryCatch({
   geojson_url <- "https://code.highcharts.com/mapdata/countries/br/br-all.geo.json"
   br_map <- fromJSON(geojson_url, simplifyVector = FALSE)
-}
+  cat("[INFO] GeoJSON carregado com sucesso\n")
+}, error = function(e) {
+  cat("[ERRO] Falha ao carregar GeoJSON:\n", conditionMessage(e), "\n")
+})
+
+
 
 # Criação de funções permanece fora
 criar_crosstable_generalizado <- function(data, var1, var2) {
@@ -89,12 +104,6 @@ create_chart <- function(mes) {
     ) %>%
     hc_yAxis(title = list(text = "")) %>%
     hc_add_series(name = "", data = dados$saldo_somado) %>%
-    hc_plotOptions(series = list(dataLabels = list(enabled = TRUE)))
-}
-
-# Interface do usuário
-ui <- dashboardPage(
-  dashboardHeader(
     title = tags$div(
       tags$strong("Mercado de Trabalho Portuário", 
                   class = "title-text"),  # Aumenta o tamanho e deixa em negrito

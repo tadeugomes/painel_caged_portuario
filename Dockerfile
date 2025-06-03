@@ -31,17 +31,27 @@ RUN R -e "install.packages(c( \
   'RColorBrewer', 'DT', 'lubridate', 'igraph' \
 ), repos = 'https://cloud.r-project.org')"
 
-# Criar diretório da aplicação Shiny
-RUN mkdir -p /srv/shiny-server/
-
-# Copiar os arquivos do app para dentro da imagem
+# Criar diretório e copiar arquivos
+RUN mkdir -p /srv/shiny-server
+WORKDIR /srv/shiny-server
 COPY . /srv/shiny-server/
 
-# Permissão para o usuário 'shiny'
-RUN chown -R shiny:shiny /srv/shiny-server
+# Criar script de inicialização com debug
+RUN echo '#!/bin/bash\n\
+echo "=== Listing contents of /srv/shiny-server ==="\n\
+ls -la /srv/shiny-server\n\
+echo "=== Listing contents of /srv/shiny-server/data ==="\n\
+ls -la /srv/shiny-server/data\n\
+echo "=== Checking R installation ==="\n\
+R --version\n\
+echo "=== Starting Shiny Server ==="\n\
+exec shiny-server >> /var/log/shiny-server.log 2>&1' > /start.sh \
+&& chmod +x /start.sh
 
-# Porta padrão do Shiny
+# Configurar permissões
+RUN chown -R shiny:shiny /srv/shiny-server \
+    && chmod -R 755 /srv/shiny-server
+
+# Porta e comando de inicialização
 EXPOSE 3838
-
-# Comando de inicialização do servidor
-CMD ["/usr/bin/shiny-server"]
+CMD ["/start.sh"]
