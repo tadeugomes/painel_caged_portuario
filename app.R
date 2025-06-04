@@ -103,15 +103,17 @@ create_chart <- function(mes) {
       )
     ) %>%
     hc_yAxis(title = list(text = "")) %>%
-    hc_add_series(name = "", data = dados$saldo_somado) %>%
+    hc_add_series(name = "", data = dados$saldo_somado)
+}
+
+ui <- dashboardPage(
+  dashboardHeader(
     title = tags$div(
-      tags$strong("Mercado de Trabalho Portuário", 
-                  class = "title-text"),  # Aumenta o tamanho e deixa em negrito
+      tags$strong("Mercado de Trabalho Portuário", class = "title-text"),
       style = "text-align: center; padding-right: 20px;"
     ),
-    titleWidth = NULL  # Permite que a largura seja ajustada dinamicamente
+    titleWidth = NULL
   ),
-  
   dashboardSidebar(
     tags$div(
       tags$img(src = "img/logo.png", height = "50px", width = "200px"),  
@@ -190,9 +192,9 @@ Para uma melhor experiência, abra o painel no seu computador.",
                            status = "primary")
                 ),
                 column(5, 
-                       box(title = "Mapa do saldo de empregos", width = NULL, highchartOutput("mapa"), 
+                       box(title = "Mapa do saldo de empregos", width = NULL, highchartOutput("mapa"),
                            solidHeader = TRUE,
-                           status = "primary",)
+                           status = "primary")
                 )
               ),
               # Novo fluidRow para os gráficos de sexo lado a lado
