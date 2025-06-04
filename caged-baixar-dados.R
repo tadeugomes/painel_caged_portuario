@@ -1,4 +1,3 @@
-
 # Limpar o ambiente (comentado para evitar problemas quando o script é sourced)
 # rm(list = ls())
 
@@ -290,3 +289,28 @@ df_variacao <- df_resumo %>%
 # Seleciona o ultimo dado de mes disponivel para analise do mes vigente
 
 ultimo_dado <- df_tres[df_tres$data == max(df_tres$data), ]
+
+# --- Controle de processamento: só processa se arquivos não existem ou se force == TRUE ---
+force <- TRUE # Altere para TRUE se quiser forçar o processamento e sobrescrita
+
+arquivos <- c(
+  "data/df.rds",
+  "data/df_dois.rds",
+  "data/df_tres.rds",
+  "data/df_resumo.rds",
+  "data/df_variacao.rds",
+  "data/ultimo_dado.rds"
+)
+
+if (!all(file.exists(arquivos)) || force) {
+  cat("Processando e salvando datasets intermediários...\n")
+  # Salvar datasets intermediários para acelerar carregamento futuro
+  saveRDS(df, file = "data/df.rds")
+  saveRDS(df_dois, file = "data/df_dois.rds")
+  saveRDS(df_tres, file = "data/df_tres.rds")
+  saveRDS(df_resumo, file = "data/df_resumo.rds")
+  saveRDS(df_variacao, file = "data/df_variacao.rds")
+  saveRDS(ultimo_dado, file = "data/ultimo_dado.rds")
+} else {
+  cat("Arquivos intermediários já existem. Pulando processamento pesado.\n")
+}

@@ -27,15 +27,13 @@ for(pkg in c('shiny', 'shinydashboard', 'tidyr', 'dplyr', 'ggplot2', 'readr',
   library(pkg, character.only = TRUE)
 }
 
+# Carregar dados .rds
+cat("Lendo arquivos .rds de data/...\n")
+df_resumo <- readRDS("data/df_resumo.rds")
+df_tres <- readRDS("data/df_tres.rds")
+df_variacao <- readRDS("data/df_variacao.rds")
+ultimo_dado <- readRDS("data/ultimo_dado.rds")
 
-
-# Captura de erros de inicialização
-tryCatch({
-  source("caged-baixar-dados.R")
-  cat("[INFO] caged-baixar-dados.R carregado com sucesso\n")
-}, error = function(e) {
-  cat("[ERRO] Falha ao carregar caged-baixar-dados.R:\n", conditionMessage(e), "\n")
-})
 
 tryCatch({
   geojson_url <- "https://code.highcharts.com/mapdata/countries/br/br-all.geo.json"
@@ -106,14 +104,9 @@ create_chart <- function(mes) {
     hc_add_series(name = "", data = dados$saldo_somado)
 }
 
+# UI do aplicativo
 ui <- dashboardPage(
-  dashboardHeader(
-    title = tags$div(
-      tags$strong("Mercado de Trabalho Portuário", class = "title-text"),
-      style = "text-align: center; padding-right: 20px;"
-    ),
-    titleWidth = NULL
-  ),
+  dashboardHeader(title = "Análise do Mercado de Trabalho Portuário"),
   dashboardSidebar(
     tags$div(
       tags$img(src = "img/logo.png", height = "50px", width = "200px"),  
@@ -192,7 +185,7 @@ Para uma melhor experiência, abra o painel no seu computador.",
                            status = "primary")
                 ),
                 column(5, 
-                       box(title = "Mapa do saldo de empregos", width = NULL, highchartOutput("mapa"),
+                       box(title = "Mapa do saldo de empregos", width = NULL, highchartOutput("mapa"), 
                            solidHeader = TRUE,
                            status = "primary")
                 )
@@ -634,13 +627,14 @@ server <- function(input, output) {
   
   output$mapa <- renderHighchart({
     dados_estados <- get_data_mapa(as.Date(paste0(input$mes_selecionado, "-01")))
-    
+    cat("[DEBUG] dados_estados head:\n")
+    print(head(dados_estados))
+    cat("[DEBUG] unique sigla_uf:\n")
+    print(unique(dados_estados$sigla_uf))
     n_cores <- 9  
     paleta_cores <- colorRampPalette(brewer.pal(n_cores, "Blues"))(10)
-    
     valor_min <- min(dados_estados$saldo_somado, na.rm = TRUE)
     valor_max <- max(dados_estados$saldo_somado, na.rm = TRUE)
-    
     highchart(type = "map") %>%
       hc_add_series_map(br_map, dados_estados, value = "saldo_somado", joinBy = c("hc-a2", "sigla_uf")) %>%
       hc_subtitle(text = paste("Dados para:", input$mes_selecionado)) %>%
@@ -661,10 +655,7 @@ server <- function(input, output) {
       ) %>%
       hc_mapNavigation(enabled = TRUE) %>%
       hc_tooltip(
-        formatter = JS("function() {
-          return '<b>' + this.point.name + '</b><br>' +
-                 'Saldo: ' + Highcharts.numberFormat(this.point.value, 0);
-        }")
+        formatter = JS("function() {\n  return '<b>' + this.point.name + '</b><br>' +\n         'Saldo: ' + Highcharts.numberFormat(this.point.value, 0);\n}")
       )
   })
   
@@ -783,3 +774,5 @@ server <- function(input, output) {
 
 # Executa o aplicativo Shiny
 shinyApp(ui = ui, server = server)
+
+
