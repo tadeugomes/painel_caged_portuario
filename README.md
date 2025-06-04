@@ -138,3 +138,14 @@ Para executar o aplicativo localmente:
 ```r
 shiny::runApp()
 ```
+
+## Executando com Docker
+
+Para construir e iniciar o contêiner localmente:
+
+```bash
+docker build -t painel_caged_portuario .
+docker run -p 3838:3838 painel_caged_portuario
+```
+
+A aplicação estará disponível em <http://localhost:3838>.
